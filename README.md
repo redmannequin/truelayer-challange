@@ -69,6 +69,7 @@ Once the service is up, you can use the available endpoints using your HTTP clie
 For a production service, I would have:
  - setup a proper `Rocket.toml` file for production 
  - added proper error handling and messages
+ - add logging and service metrics 
  - found a better home for the Pokedex types and related functions 
  - created clients for the APIs rather than have loss functions, especially for the funtranlsation API as it has authentication capabilities
  - added mock testing for API clients and Pokedex service
