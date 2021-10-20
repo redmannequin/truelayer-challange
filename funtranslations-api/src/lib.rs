@@ -10,18 +10,18 @@ const FUNTRANSLATION_YODA_ENDPOINT: &str = "/yoda.json";
 const FUNTRANSLATION_SHAKESPEARE_ENDPOINT: &str = "/shakespeare.json";
 
 /// a funtranslation result
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Eq, PartialEq, Debug)]
 pub struct FunTranslation {
     success: Success,
     contents: Contents,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Eq, PartialEq, Debug)]
 pub struct Success {
     total: i32,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Eq, PartialEq, Debug)]
 pub struct Contents {
     translated: String,
     text: String,
@@ -60,4 +60,30 @@ pub async fn translate_to_shakespeare(text: &str) -> Result<String> {
         .json::<FunTranslation>()
         .await?;
     Ok(res.contents.translated)
+}
+
+#[test]
+fn test_deserialize_fun_translation() {
+    let text = r#"{
+        "success": {
+          "total": 1
+        },
+        "contents": {
+          "translated": "Thee did giveth mr. Tim a hearty meal,  but unfortunately what he did doth englut did maketh him kicketh the bucket.",
+          "text": "You gave Mr. Tim a hearty meal, but unfortunately what he ate made him die.",
+          "translation": "shakespeare"
+        }
+      }"#;
+    let translated_text = serde_json::from_str::<FunTranslation>(text);
+    assert!(translated_text.is_ok());
+    assert_eq!(translated_text.unwrap(), FunTranslation{
+        success: Success {
+            total: 1
+        },
+        contents: Contents {
+            translated: "Thee did giveth mr. Tim a hearty meal,  but unfortunately what he did doth englut did maketh him kicketh the bucket.".into(),
+            text: "You gave Mr. Tim a hearty meal, but unfortunately what he ate made him die.".into(),
+            translation: "shakespeare".into()
+        }
+    });
 }

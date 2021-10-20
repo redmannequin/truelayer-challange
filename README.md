@@ -6,10 +6,10 @@ A pokedex service that allows you to query for pokemon information and includes 
 
 A list of the available endpoints
 
-| endpoint                     | HTTP method |                        description                             |
-|------------------------------|-------------|----------------------------------------------------------------|
-| `/pokemon/<name>`            | `GET`       | returns a `Pokemon` with the given name                        |
-| `/pokemon/translated/<name>` | `GET`       | returns a `Pokemon` with the given name with a fun description |
+| endpoint                     | HTTP method |                        description                                                     |
+|------------------------------|-------------|----------------------------------------------------------------------------------------|
+| `/pokemon/<name>`            | `GET`       | returns a `Pokemon` with the given name(name must be lowercase)                        |
+| `/pokemon/translated/<name>` | `GET`       | returns a `Pokemon` with the given name(name must be lowercase) with a fun description |
 
 
 ## Types
