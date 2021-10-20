@@ -16,7 +16,6 @@ const POKEAPI_POKEMON_SPECIES_URL: &str = "https://pokeapi.co/api/v2/pokemon-spe
 /// * `name` - A string slice with the name of a pokemon
 pub async fn get_pokemon_species(name: &str) -> Result<PokemonSpecies> {
     let pokemon_species_url = format!("{}/{}", POKEAPI_POKEMON_SPECIES_URL, name);
-    println!("{}", pokemon_species_url);
     reqwest::get(pokemon_species_url.as_str())
         .await?
         .json::<PokemonSpecies>()
