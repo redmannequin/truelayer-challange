@@ -70,17 +70,18 @@ async fn update_description(pokemon: &mut Pokemon) {
         if pokemon.is_legendary {
             if let Ok(new_description) = translate_to_yoda(description.as_ref()).await {
                 *description = new_description;
+                return;
             }
         } else if let Some(habitat) = pokemon.habitat.as_deref() {
             if habitat == "cave" {
                 if let Ok(new_description) = translate_to_yoda(description.as_ref()).await {
                     *description = new_description;
+                    return;
                 }
             }
-        } else {
-            if let Ok(new_description) = translate_to_shakespeare(description.as_ref()).await {
-                *description = new_description;
-            }
+        }
+        if let Ok(new_description) = translate_to_shakespeare(description.as_ref()).await {
+            *description = new_description;
         }
     }
 }
