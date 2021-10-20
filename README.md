@@ -32,7 +32,7 @@ The service can be run on your system sandalone or via docker
 
 ### Standalone 
 
-institution for building and running `pokedex` on your local computer
+instructions for building and running `pokedex` on your local computer
 
 #### requirements
 
