@@ -21,11 +21,18 @@ pub async fn translated(name: &str) -> Result<Json<Pokemon>, Status> {
     match get_pokemon_species(name).await {
         Ok(pokemon) => {
             let mut pokemon: Pokemon = pokemon.into();
-            update_description(&mut pokemon).await;
+            pokemon.update_description().await;
             Ok(Json(pokemon))
         }
         Err(_err) => Err(Status::NotAcceptable),
     }
+}
+
+/// a list a available translation types
+#[derive(Debug, Eq, PartialEq)]
+enum TranslateType {
+    Yoda,
+    Shakespeare,
 }
 
 /// represents a pokemon
@@ -35,6 +42,45 @@ pub struct Pokemon {
     description: Option<String>,
     habitat: Option<String>,
     is_legendary: bool,
+}
+
+impl Pokemon {
+    /// updates a pokemons description with a fun translation
+    pub async fn update_description(&mut self) {
+        match self.get_translation_type() {
+            Some(TranslateType::Yoda) => {
+                if let Ok(new_description) =
+                    translate_to_yoda(self.description.as_ref().unwrap()).await
+                {
+                    self.description = Some(new_description);
+                }
+            }
+            Some(TranslateType::Shakespeare) => {
+                if let Ok(new_description) =
+                    translate_to_shakespeare(self.description.as_ref().unwrap()).await
+                {
+                    self.description = Some(new_description);
+                }
+            }
+            None => (),
+        }
+    }
+
+    /// returns the `TranslateType` of the pokemon
+    fn get_translation_type(&self) -> Option<TranslateType> {
+        if self.description.is_some() {
+            if self.is_legendary {
+                return Some(TranslateType::Yoda);
+            } else if let Some(habitat) = self.habitat.as_deref() {
+                if habitat == "cave" {
+                    return Some(TranslateType::Yoda);
+                }
+                return Some(TranslateType::Shakespeare);
+            }
+            return Some(TranslateType::Shakespeare);
+        }
+        None
+    }
 }
 
 impl From<PokemonSpecies> for Pokemon {
@@ -59,59 +105,6 @@ impl From<PokemonSpecies> for Pokemon {
     }
 }
 
-/// a list a available translation types
-#[derive(Debug, Eq, PartialEq)]
-enum TranslateType {
-    Yoda,
-    Shakespeare,
-}
-
-/// updates a pokemons description with a fun translation
-///
-///
-/// # Arguments
-///
-/// * `pokemon` - A pokemont to update
-async fn update_description(pokemon: &mut Pokemon) {
-    match get_translation_type(pokemon) {
-        Some(TranslateType::Yoda) => {
-            if let Ok(new_description) =
-                translate_to_yoda(pokemon.description.as_ref().unwrap()).await
-            {
-                pokemon.description = Some(new_description);
-            }
-        }
-        Some(TranslateType::Shakespeare) => {
-            if let Ok(new_description) =
-                translate_to_shakespeare(pokemon.description.as_ref().unwrap()).await
-            {
-                pokemon.description = Some(new_description);
-            }
-        }
-        None => (),
-    }
-}
-
-/// gets the translation type for a given pokemon
-///
-/// # Arguments
-///
-/// * `pokemon` - the pokemont in question
-fn get_translation_type(pokemon: &Pokemon) -> Option<TranslateType> {
-    if pokemon.description.is_some() {
-        if pokemon.is_legendary {
-            return Some(TranslateType::Yoda);
-        } else if let Some(habitat) = pokemon.habitat.as_deref() {
-            if habitat == "cave" {
-                return Some(TranslateType::Yoda);
-            }
-            return Some(TranslateType::Shakespeare);
-        }
-        return Some(TranslateType::Shakespeare);
-    }
-    None
-}
-
 #[test]
 fn update_get_translation_type_is_legendary() {
     let onix = Pokemon {
@@ -120,7 +113,7 @@ fn update_get_translation_type_is_legendary() {
         habitat: Some("cave".into()),
         is_legendary: true,
     };
-    assert_eq!(get_translation_type(&onix), Some(TranslateType::Yoda));
+    assert_eq!(onix.get_translation_type(), Some(TranslateType::Yoda));
 }
 
 #[test]
@@ -131,7 +124,7 @@ fn update_get_translation_type_cave_habitat() {
         habitat: Some("cave".into()),
         is_legendary: true,
     };
-    assert_eq!(get_translation_type(&onix), Some(TranslateType::Yoda));
+    assert_eq!(onix.get_translation_type(), Some(TranslateType::Yoda));
 }
 
 #[test]
@@ -143,7 +136,7 @@ fn update_get_translation_type_shakespeare() {
         is_legendary: false,
     };
     assert_eq!(
-        get_translation_type(&onix),
+        onix.get_translation_type(),
         Some(TranslateType::Shakespeare)
     );
 }
@@ -156,5 +149,5 @@ fn update_get_translation_type_none() {
         habitat: Some("water".into()),
         is_legendary: false,
     };
-    assert_eq!(get_translation_type(&onix), None);
+    assert_eq!(onix.get_translation_type(), None);
 }
