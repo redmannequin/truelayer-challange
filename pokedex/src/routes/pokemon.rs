@@ -75,7 +75,6 @@ impl Pokemon {
                 if habitat == "cave" {
                     return Some(TranslateType::Yoda);
                 }
-                return Some(TranslateType::Shakespeare);
             }
             return Some(TranslateType::Shakespeare);
         }
