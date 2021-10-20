@@ -60,6 +60,10 @@ instructions for running `pokedex` using docker
 1. `cd` into the root folder of the `repo`
 1. run `docker-compose up`
 
+## Using endpoints
+
+Once the service is up, you can use the available endpoints using your HTTP client of choice at `localhost:8000` 
+
 ## Prodcution 
 
 For a production service, I would have:
