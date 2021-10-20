@@ -34,7 +34,7 @@ pub struct Pokemon {
     name: String,
     description: Option<String>,
     habitat: Option<String>,
-    is_lengerday: bool,
+    is_legendary: bool,
 }
 
 impl From<PokemonSpecies> for Pokemon {
@@ -54,7 +54,7 @@ impl From<PokemonSpecies> for Pokemon {
                         .join(" ")
                 }),
             habitat: pokemon_species.habitat.map(|x| x.name),
-            is_lengerday: pokemon_species.is_legendary,
+            is_legendary: pokemon_species.is_legendary,
         }
     }
 }
@@ -67,7 +67,7 @@ impl From<PokemonSpecies> for Pokemon {
 /// * `pokemon` - A pokemont to update
 async fn update_description(pokemon: &mut Pokemon) {
     if let Some(ref mut description) = pokemon.description {
-        if pokemon.is_lengerday {
+        if pokemon.is_legendary {
             if let Ok(new_description) = translate_to_yoda(description.as_ref()).await {
                 *description = new_description;
             }
