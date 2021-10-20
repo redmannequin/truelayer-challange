@@ -59,3 +59,16 @@ instructions for running `pokedex` using docker
 1. `clone` the the `repo` onto your computer
 1. `cd` into the root folder of the `repo`
 1. run `docker-compose up`
+
+## Prodcution 
+
+For a production service, I would have:
+ - setup a proper `Rocket.toml` file for production 
+ - added proper error handling and messages
+ - found a better home for the Pokedex types and related functions 
+ - created clients for the APIs rather than have loss functions, especially for the funtranlsation API as it has authentication capabilities
+ - added mock testing for API clients and Pokedex service
+ - added GitHub actions for automated testing 
+ - package the libs into a package manager instead of loading from the source
+
+Overall the API is pretty small, so there's not much to change or reorganize.
