@@ -1,3 +1,3 @@
 [workspace]
 
-members = ["pokedex", "pokeapi"]
+members = ["pokedex", "pokeapi", "funtranslations-api"]
