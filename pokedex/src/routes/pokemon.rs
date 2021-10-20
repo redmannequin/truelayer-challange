@@ -59,6 +59,13 @@ impl From<PokemonSpecies> for Pokemon {
     }
 }
 
+/// a list a available translation types
+#[derive(Debug, Eq, PartialEq)]
+enum TranslateType {
+    Yoda,
+    Shakespeare,
+}
+
 /// updates a pokemons description with a fun translation
 ///
 ///
@@ -66,22 +73,88 @@ impl From<PokemonSpecies> for Pokemon {
 ///
 /// * `pokemon` - A pokemont to update
 async fn update_description(pokemon: &mut Pokemon) {
-    if let Some(ref mut description) = pokemon.description {
-        if pokemon.is_legendary {
-            if let Ok(new_description) = translate_to_yoda(description.as_ref()).await {
-                *description = new_description;
-                return;
+    match get_translation_type(pokemon) {
+        Some(TranslateType::Yoda) => {
+            if let Ok(new_description) =
+                translate_to_yoda(pokemon.description.as_ref().unwrap()).await
+            {
+                pokemon.description = Some(new_description);
             }
+        }
+        Some(TranslateType::Shakespeare) => {
+            if let Ok(new_description) =
+                translate_to_shakespeare(pokemon.description.as_ref().unwrap()).await
+            {
+                pokemon.description = Some(new_description);
+            }
+        }
+        None => (),
+    }
+}
+
+/// gets the translation type for a given pokemon
+///
+/// # Arguments
+///
+/// * `pokemon` - the pokemont in question
+fn get_translation_type(pokemon: &Pokemon) -> Option<TranslateType> {
+    if pokemon.description.is_some() {
+        if pokemon.is_legendary {
+            return Some(TranslateType::Yoda);
         } else if let Some(habitat) = pokemon.habitat.as_deref() {
             if habitat == "cave" {
-                if let Ok(new_description) = translate_to_yoda(description.as_ref()).await {
-                    *description = new_description;
-                    return;
-                }
+                return Some(TranslateType::Yoda);
             }
+            return Some(TranslateType::Shakespeare);
         }
-        if let Ok(new_description) = translate_to_shakespeare(description.as_ref()).await {
-            *description = new_description;
-        }
+        return Some(TranslateType::Shakespeare);
     }
+    None
+}
+
+#[test]
+fn update_get_translation_type_is_legendary() {
+    let onix = Pokemon {
+        name: "onix".into(),
+        description: Some("As it grows, the stone portions of its body harden to become similar to a diamond, but colored black.".into()),
+        habitat: Some("cave".into()),
+        is_legendary: true,
+    };
+    assert_eq!(get_translation_type(&onix), Some(TranslateType::Yoda));
+}
+
+#[test]
+fn update_get_translation_type_cave_habitat() {
+    let onix = Pokemon {
+        name: "onix".into(),
+        description: Some("As it grows, the stone portions of its body harden to become similar to a diamond, but colored black.".into()),
+        habitat: Some("cave".into()),
+        is_legendary: true,
+    };
+    assert_eq!(get_translation_type(&onix), Some(TranslateType::Yoda));
+}
+
+#[test]
+fn update_get_translation_type_shakespeare() {
+    let onix = Pokemon {
+        name: "onix".into(),
+        description: Some("As it grows, the stone portions of its body harden to become similar to a diamond, but colored black.".into()),
+        habitat: Some("water".into()),
+        is_legendary: false,
+    };
+    assert_eq!(
+        get_translation_type(&onix),
+        Some(TranslateType::Shakespeare)
+    );
+}
+
+#[test]
+fn update_get_translation_type_none() {
+    let onix = Pokemon {
+        name: "onix".into(),
+        description: None,
+        habitat: Some("water".into()),
+        is_legendary: false,
+    };
+    assert_eq!(get_translation_type(&onix), None);
 }
