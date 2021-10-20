@@ -2,17 +2,17 @@
 extern crate rocket;
 
 mod funtranslations_api;
-mod pokeapi;
 
 // third party imports
 use rocket::http::Status;
 use rocket::serde::json::Json;
 use serde::Serialize;
+use pokeapi::get_pokemon_species;
+use pokeapi::types::pokemon::PokemonSpecies;
 
 // local imports
 use funtranslations_api::{translate_to_shakespeare, translate_to_yoda};
-use pokeapi::get_pokemon_species;
-use pokeapi::types::pokemon::PokemonSpecies;
+
 
 /// represents a pockemon
 #[derive(Serialize)]
