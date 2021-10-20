@@ -74,5 +74,6 @@ For a production service, I would have:
  - added mock testing for API clients and Pokedex service
  - added GitHub actions for automated testing 
  - package the libs into a package manager instead of loading from the source
+ - add caching of frequently requested pokemon
 
 Overall the API is pretty small, so there's not much to change or reorganize.
